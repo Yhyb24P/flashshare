@@ -74,7 +74,10 @@ const joinRoom = () => {
   if (!roomId.value) return alert("请输入房间号");
   
   // 连接后端 WebSocket (注意端口要对应后端 8000)
-  const wsUrl = `ws://localhost:8000/ws/${roomId.value}/${clientId.value}`;
+//   const wsUrl = `ws://localhost:8000/ws/${roomId.value}/${clientId.value}`;
+// 替换为:
+const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+const wsUrl = `${protocol}//${window.location.host}/ws/${roomId.value}/${clientId.value}`;
   ws.value = new WebSocket(wsUrl);
 
   ws.value.onopen = () => {
@@ -121,7 +124,7 @@ const uploadFile = async (event) => {
 
   try {
     // 发送 POST 请求给后端
-    await fetch("http://localhost:8000/api/upload", {
+    await fetch("/api/upload","http://localhost:8000/api/upload", {
       method: "POST",
       body: formData
     });
@@ -133,7 +136,7 @@ const uploadFile = async (event) => {
 
 // --- 辅助功能 ---
 const getDownloadUrl = (path) => {
-  return `http://localhost:8000${path}`;
+  return path;
 };
 
 const formatTime = (seconds) => {
