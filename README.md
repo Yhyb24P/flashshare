@@ -70,7 +70,7 @@ python -m venv venv
 # Mac/Linux: source venv/bin/activate
 
 # 3. 安装依赖
-pip install -r requirements.txt
+pip install -r fastapi uvicorn websockets pydantic aiofiles python-multipart
 
 # 4. 启动服务器 (默认端口 8000)
 uvicorn main:app --reload --host 0.0.0.0 --port 8000
