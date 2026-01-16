@@ -14,8 +14,8 @@ from cleaner import start_cleaner_task
 
 # --- 配置 ---
 UPLOAD_DIR = "uploads"
-DEFAULT_TTL = 600  # 默认存活时间 600秒 (10分钟)
-
+DEFAULT_TTL = 300  # 默认存活时间 600秒 (10分钟)
+MAX_FILE_SIZE = 100 * 1024 * 1024  # 100MB 限制
 # 确保上传目录存在
 if not os.path.exists(UPLOAD_DIR):
     os.makedirs(UPLOAD_DIR)
@@ -83,26 +83,53 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str, client_id: str)
         manager.disconnect(websocket, room_id)
 
 
+
+
+# --- 2. 替换整个 upload_file 函数 ---
 @app.post("/api/upload")
 async def upload_file(
     file: UploadFile = File(...), 
     room_id: str = Form(...),
     sender: str = Form(...)
 ):
-    """处理文件流上传"""
+    """处理文件流上传，并限制大小"""
+    
     file_id = str(uuid.uuid4())
     # 为了防止文件名冲突，物理文件名带上UUID
     safe_filename = f"{file_id}_{file.filename}"
     file_path = os.path.join(UPLOAD_DIR, safe_filename)
     
-    # 1. 写入磁盘
+    # --- 阶段一：写入磁盘并检查大小 ---
     try:
+        size = 0
         with open(file_path, "wb") as buffer:
-            shutil.copyfileobj(file.file, buffer)
+            while True:
+                # 分块读取，每次 1MB
+                chunk = await file.read(1024 * 1024)
+                if not chunk:
+                    break
+                
+                size += len(chunk)
+                if size > MAX_FILE_SIZE:
+                    # ⚠️ 超限处理：
+                    # 1. 主动报错，跳出 with 语句（文件会自动关闭）
+                    raise HTTPException(status_code=413, detail="文件大小超过 100MB 限制")
+                
+                buffer.write(chunk)
+                
+    except HTTPException as e:
+        # 捕获超限异常，删除残留文件，然后继续往上抛出给前端
+        if os.path.exists(file_path):
+            os.remove(file_path)
+        raise e
     except Exception as e:
+        # 捕获其他未知IO异常
+        if os.path.exists(file_path):
+            os.remove(file_path)
+        print(f"Upload error: {e}")
         raise HTTPException(status_code=500, detail="文件保存失败")
         
-    # 2. 构造元数据
+    # --- 阶段二：保存元数据 (这部分你之前漏掉了) ---
     timestamp = time.time()
     expires_at = timestamp + DEFAULT_TTL
     
@@ -112,7 +139,8 @@ async def upload_file(
         room_id=room_id,
         sender=sender,
         filename=file.filename,
-        # file.size 并不总是准确，这里简化处理，也可以用 os.path.getsize
+        # 记录真实大小
+        file_size=str(size), 
         download_url=f"/api/download/{file_id}",
         created_at=timestamp,
         expires_at=expires_at
