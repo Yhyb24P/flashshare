@@ -40,7 +40,7 @@
         <div v-if="!joined" class="welcome-screen">
           <div class="brand-logo">⚡</div>
           <h1>FlashShare</h1>
-          <p class="subtitle">瞬时传输 · 阅后即焚</p>
+          <p class="subtitle">阅后即焚</p>
           <div class="quick-start">
             <input 
               v-model="inputRoomId" 
