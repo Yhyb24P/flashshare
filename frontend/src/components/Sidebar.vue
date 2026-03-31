@@ -130,20 +130,60 @@ const updateSetting = (key, value) => {
   z-index: 20;
 }
 
-.sidebar.collapsed { width: 70px; }
-.sidebar.mobile-open { position: absolute; height: 100%; width: 85%; max-width: 300px; box-shadow: var(--shadow-md); }
+/* Mobile (< 768px): sidebar slides in as overlay */
+@media (max-width: 767px) {
+  .sidebar {
+    width: 100%;
+    max-width: 300px;
+    position: absolute;
+    height: 100%;
+    box-shadow: var(--shadow-md);
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+  }
+  .sidebar.mobile-open {
+    transform: translateX(0);
+  }
+  .sidebar.collapsed {
+    width: 100%;
+    max-width: 300px;
+    transform: translateX(-100%);
+  }
+}
+
+/* Tablet (768px - 1024px): narrower sidebar */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .sidebar {
+    width: 220px;
+  }
+  .sidebar.collapsed {
+    width: 60px;
+  }
+}
 
 /* Header */
 .header { padding: 16px; border-bottom: 1px solid var(--c-border); position: relative; display: flex; align-items: center; height: 72px; }
-.user-card { display: flex; align-items: center; gap: 12px; overflow: hidden; width: 100%; }
-.avatar { width: 40px; height: 40px; border-radius: 10px; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; position: relative; flex-shrink: 0; }
+.user-card { display: flex; align-items: center; gap: 12px; overflow: hidden; width: 100%; min-width: 0; }
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  position: relative;
+  flex-shrink: 0;
+  font-size: 0.85rem; /* prevent overflow on small screens */
+}
 .status-dot { width: 10px; height: 10px; background: var(--c-text-muted); border: 2px solid var(--c-bg-panel); border-radius: 50%; position: absolute; bottom: -2px; right: -2px; transition: .3s; }
 .status-dot.connected { background: #22c55e; }
 
-.info { display: flex; flex-direction: column; min-width: 0; }
-.input-name { border: none; background: transparent; font-weight: 600; color: var(--c-text-main); width: 100%; padding: 0; outline: none; }
+.info { display: flex; flex-direction: column; min-width: 0; overflow: hidden; }
+.input-name { border: none; background: transparent; font-weight: 600; color: var(--c-text-main); width: 100%; padding: 0; outline: none; font-size: 1rem; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .input-name:focus { border-bottom: 1px solid var(--c-primary); }
-.user-id { font-size: 0.75rem; color: var(--c-text-muted); cursor: pointer; }
+.user-id { font-size: 0.75rem; color: var(--c-text-muted); cursor: pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 .toggle-btn { position: absolute; right: -12px; top: 50%; transform: translateY(-50%); width: 24px; height: 24px; border-radius: 50%; border: 1px solid var(--c-border); background: var(--c-bg-panel); color: var(--c-text-muted); display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 10; font-size: 0.6rem; }
 .toggle-btn:hover { color: var(--c-primary); border-color: var(--c-primary); }
@@ -155,11 +195,12 @@ const updateSetting = (key, value) => {
 .search-box input:focus { border-color: var(--c-primary); background: var(--c-bg-panel); }
 
 .nav-section label { font-size: 0.75rem; font-weight: 700; color: var(--c-text-muted); text-transform: uppercase; margin-bottom: 8px; display: block; }
-.room-item { padding: 10px; border-radius: 8px; color: var(--c-text-muted); display: flex; align-items: center; gap: 10px; cursor: pointer; transition: .2s; }
+.room-item { padding: 10px; border-radius: 8px; color: var(--c-text-muted); display: flex; align-items: center; gap: 10px; cursor: pointer; transition: .2s; overflow: hidden; }
 .room-item:hover { background: var(--c-bg-hover); color: var(--c-text-main); }
 .room-item.active { background: var(--c-bubble-self); color: var(--c-primary-hover); font-weight: 500; }
-.hash { opacity: 0.5; font-weight: bold; }
-.tag-live { margin-left: auto; font-size: 0.6rem; background: var(--c-primary); color: white; padding: 2px 6px; border-radius: 4px; }
+.hash { opacity: 0.5; font-weight: bold; flex-shrink: 0; }
+.name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; min-width: 0; }
+.tag-live { flex-shrink: 0; font-size: 0.6rem; background: var(--c-primary); color: white; padding: 2px 6px; border-radius: 4px; }
 .empty-text { font-size: 0.8rem; color: var(--c-text-light); font-style: italic; padding: 8px; }
 
 .mt-auto { margin-top: auto; }

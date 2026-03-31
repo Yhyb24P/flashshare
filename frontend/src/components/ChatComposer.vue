@@ -118,15 +118,21 @@ const onDrop = (e) => {
 }
 
 .btn-tool {
-  background: transparent; border: none; font-size: 1.2rem; cursor: pointer; padding: 8px; border-radius: 8px; color: var(--c-text-muted); transition: .2s;
+  background: transparent; border: none; font-size: 1.2rem; cursor: pointer; padding: 6px; border-radius: 8px; color: var(--c-text-muted); transition: .2s; flex-shrink: 0;
 }
 .btn-tool:hover { background: var(--c-bg-panel); color: var(--c-text-main); }
 
 .btn-send {
-  background: var(--c-primary); color: white; border: none; width: 36px; height: 36px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: .2s;
+  background: var(--c-primary); color: white; border: none; min-width: 36px; height: 36px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: .2s; flex-shrink: 0;
 }
 .btn-send:hover { background: var(--c-primary-hover); }
 .btn-send:disabled { background: var(--c-text-light); cursor: not-allowed; }
+
+/* Mobile: ensure buttons don't shrink */
+@media (max-width: 480px) {
+  .btn-tool, .btn-send { min-width: 36px; height: 36px; }
+  .composer { padding: 12px 10px; }
+}
 
 .drop-mask {
   position: absolute; inset: 0; background: rgba(255,255,255,0.9); z-index: 10; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(2px);

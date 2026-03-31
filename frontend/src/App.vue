@@ -175,6 +175,10 @@ const scrollToBottom = () => {
 
 const clearMessages = () => messages.value = [];
 
+// --- 配置 ---
+// Cloudflare Tunnel 后端地址（外部访问用）
+const BACKEND_URL = 'https://limits-dressed-heavily-belt.trycloudflare.com';
+
 // --- 核心业务逻辑 ---
 
 const handleJoin = (id) => {
@@ -193,13 +197,11 @@ const handleJoin = (id) => {
   window.history.pushState({}, '', `/room/${targetId}`);
 
   // WebSocket 连接
-  const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-  // 开发环境适配：如果用了 Vite proxy，可以直接连 /ws，否则连后端端口
-  const host = window.location.hostname === 'localhost' ? 'localhost:8000' : window.location.host;
-  // 这里假设 Vite 做了代理转发 /ws -> localhost:8000/ws
-  const wsUrl = `ws://${host}/ws/${targetId}/${user.clientId}`;
-  
-  // 如果没有代理，请使用: const wsUrl = `ws://localhost:8000/ws/${targetId}/${user.clientId}`;
+  // 外部访问时直连后端隧道 URL，绕过 Vite proxy
+  const isLocal = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+  const wsUrl = isLocal
+    ? `ws://localhost:8000/ws/${targetId}/${user.clientId}`
+    : `wss://limits-dressed-heavily-belt.trycloudflare.com/ws/${targetId}/${user.clientId}`;
 
   ws = new WebSocket(wsUrl);
   
@@ -250,7 +252,11 @@ const handleFileUpload = async (files) => {
     
     // 乐观 UI：先推一个假消息占位 (可选，这里略过，直接等后端广播)
     try {
-      await fetch("/api/upload", { method: "POST", body: formData });
+      const isLocal = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+      const uploadUrl = isLocal
+        ? '/api/upload'
+        : 'https://limits-dressed-heavily-belt.trycloudflare.com/api/upload';
+      await fetch(uploadUrl, { method: "POST", body: formData });
     } catch (e) {
       console.error("Upload failed", e);
       alert("上传失败: " + file.name);
@@ -286,6 +292,13 @@ const handleFileUpload = async (files) => {
   gap: 16px;
 }
 
+.message-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
 /* 遮罩层 */
 .mobile-overlay {
   position: absolute;
@@ -315,6 +328,9 @@ const handleFileUpload = async (files) => {
   border-radius: 12px;
   box-shadow: var(--shadow-md);
   border: 1px solid var(--c-border);
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: 90vw;
 }
 .quick-start input {
   border: none;
@@ -322,7 +338,8 @@ const handleFileUpload = async (files) => {
   outline: none;
   padding: 8px;
   font-size: 1rem;
-  width: 200px;
+  min-width: 0;
+  flex: 1 1 150px;
   color: var(--c-text-main);
 }
 .quick-start button {
@@ -333,6 +350,7 @@ const handleFileUpload = async (files) => {
   border-radius: 8px;
   font-weight: 600;
   cursor: pointer;
+  flex-shrink: 0;
 }
 
 .empty-room-hint {
