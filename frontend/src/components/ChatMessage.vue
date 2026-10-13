@@ -74,22 +74,54 @@ const renderContent = (text) => {
 </script>
 
 <style scoped>
-.message-row { display: flex; gap: 12px; max-width: 85%; }
-.message-row.self { align-self: flex-end; flex-direction: row-reverse; }
-.message-row.system { align-self: center; width: 100%; justify-content: center; margin: 10px 0; }
+.message-row { display: flex; gap: 12px; width: 100%; }
+.message-row.self {
+  margin-left: auto;
+  flex-direction: row-reverse;
+  max-width: 75%;
+}
+.message-row.system { justify-content: center; margin: 10px 0; }
 
 .system-badge { background: var(--c-bg-hover); color: var(--c-text-light); padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; }
 
-.avatar { width: 36px; height: 36px; border-radius: 8px; background: var(--c-bg-hover); color: var(--c-text-muted); display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: bold; flex-shrink: 0; }
+.avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: var(--c-bg-hover);
+  color: var(--c-text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: bold;
+  flex-shrink: 0;
+  align-self: flex-end;
+}
 .self .avatar { background: var(--c-primary); color: white; }
 
-.content-wrapper { display: flex; flex-direction: column; min-width: 0; }
+.content-wrapper { display: flex; flex-direction: column; min-width: 0; flex: 1; }
 
 .meta { display: flex; gap: 8px; font-size: 0.75rem; color: var(--c-text-light); margin-bottom: 4px; }
 .self .meta { flex-direction: row-reverse; }
 
-.bubble { background: var(--c-bubble-other); padding: 10px 14px; border-radius: var(--radius-lg); border-top-left-radius: 2px; box-shadow: var(--shadow-sm); color: var(--c-text-main); position: relative; word-wrap: break-word; }
-.self .bubble { background: var(--c-bubble-self); border-top-left-radius: var(--radius-lg); border-top-right-radius: 2px; }
+.bubble {
+  background: var(--c-bubble-other);
+  padding: 10px 14px;
+  border-radius: var(--radius-lg);
+  border-top-left-radius: 2px;
+  box-shadow: var(--shadow-sm);
+  color: var(--c-text-main);
+  position: relative;
+  word-wrap: break-word;
+  width: 100%;
+  box-sizing: border-box;
+}
+.self .bubble {
+  background: var(--c-bubble-self);
+  border-top-left-radius: var(--radius-lg);
+  border-top-right-radius: 2px;
+}
 
 /* Markdown reset */
 .markdown-body { background: transparent !important; font-size: 0.95rem; }

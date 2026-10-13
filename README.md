@@ -65,13 +65,13 @@ FlashShare/
 cd backend
 
 # 2. (可选) 创建并激活虚拟环境
-python -m venv venv
+python3 -m venv venv
 # Windows: venv\Scripts\activate
 # Mac/Linux: source venv/bin/activate
 
 # 3. 安装依赖
-pip install -r fastapi uvicorn websockets pydantic aiofiles python-multipart
-
+pip install fastapi uvicorn websockets pydantic aiofiles python-multipart
+pip install aiofiles
 # 4. 启动服务器 (默认端口 8000)
 uvicorn main:app --reload --host 0.0.0.0 --port 8000
 ```
@@ -88,7 +88,8 @@ cd frontend
 
 # 2. 安装依赖
 npm install
-
+npm install highlight.js github-markdown-css @vueuse/core
+npm install marked dompurify
 # 3. 启动开发服务器
 npm run dev
 ```
